@@ -1,18 +1,11 @@
 ---
 title: "V-show or v-if"
-
 slug: "v-show-or-v-if"
-
 description: ""
-
 date: 2019-08-15 02:08:04
-
 author: "Waju"
-
 tags: ["javascript", "VueJs", "opinion"]
-
 cover: "/images/posts/lifecycle.png"
-
 fullscreen: false
 ---
 
@@ -61,223 +54,66 @@ UI frameworks like Vue offer a layer of abstraction over the DOM providing use a
 Take this piece of code for example where we define a `Test comp` , in a real app we would probably be setting up event listeners, subscribing to Vuex stores, WebSocket subscriptions, graphql and whatever kind of voodoo you're into, no judgment. A real component would probably also have some other component as children. each with their mess of listeners and hooks, Here we just hook into the different phases of the components' lifecycle, for good measure, we register a click event listener, that Vue has to deal with somehow.
 
 ```javascript
-
-
-
 <template>
-
-
-
-<h4  @click="noop">I  am  conditionally  rendered</h4>
-
-
-
+    <h4  @click="noop">I  am  conditionally  rendered</h4>
 </template>
-
-
-
 <script>
-
-
-
-export  default  {
-
-
-
-beforeCreate() {
-
-
-
-console.log('beforeCreate')
-
-
-
-},
-
-
-
-created() {
-
-
-
-console.log('Created')
-
-
-
-},
-
-
-
-beforeMount() {
-
-
-
-console.log('before mounting')
-
-
-
-},
-
-
-
-mounted() {
-
-
-
-console.log('Mounted')
-
-
-
-},
-
-
-
-
-
-beforeUpdate() {
-
-
-
-console.log('before update')
-
-
-
-},
-
-
-
-updated() {
-
-
-
-console.log('updated')
-
-
-
-},
-
-
-
-
-
-beforeDestroy() {
-
-
-
-console.log('before destroy')
-
-
-
-},
-
-
-
-destroyed() {
-
-
-
-console.log('destroyed')
-
-
-
-},
-
-
-
-methods:  {
-
-
-
-noop()  {}
-
-
-
+    export default {
+  beforeCreate() {
+    console.log('beforeCreate')
+  },
+  created() {
+    console.log('Created')
+  },
+  beforeMount() {
+    console.log('before mounting')
+  },
+  mounted() {
+    console.log('Mounted')
+  },
+  beforeUpdate() {
+    console.log('before update')
+  },
+  updated() {
+    console.log('updated')
+  },
+  beforeDestroy() {
+    console.log('before destroy')
+  },
+  destroyed() {
+    console.log('destroyed')
+  },
+  methods: {
+    noop() {}
+  }
 }
-
-
-
-}
-
-
-
 </script>
-
-
-
 ```
 
 In the `App` component we have the `TestComp` as a child component.
 
 ```javascript
-
 <template>
-
-<div  id="app">
-
-<h3>V-if vs v-show</h3>
-
-<TestComponent  v-show="showStuff"  />
-
-<button  @click="showStuff  =  !showStuff">Toggle  Stuff</button>
-
-</div>
-
-
-
+  <div id="app">
+    <h3>V-if vs v-show</h3>
+    <TestComponent v-show="showStuff" />
+    <button @click="showStuff  =  !showStuff">Toggle Stuff</button>
+  </div>
 </template>
 
-
-
-
-
 <script>
+import TestComponent from '@/components/TestComp'
 
-
-
-import  TestComponent  from  '@/components/TestComp'
-
-
-
-export  default  {
-
-
-
-name: 'app',
-
-
-
-components: {
-
-
-
-TestComponent
-
-
-
-},
-
-
-
-data: ()  => ({
-
-
-
-showStuff:  false
-
-
-
-})
-
-
-
+export default {
+  name: 'app',
+  components: {
+    TestComponent
+  },
+  data: () => ({
+    showStuff: false
+  })
 }
-
-
-
 </script>
-
-
-
 ```
 
 When Vue renders this component let say it would incur a performance cost x units for rendering the node that corresponds to the `TestComp`. with v-if, since the condition is initially false, the component is not rendered at all there will be no console logs, which is good for performance. no wasteful operation(s). had we used `v-show` we would have `TestComp` rendered only just to be hidden with `style=" display :none"` Hence the docs says
@@ -297,300 +133,93 @@ And this leads to their conclusion
 Consider this piece of code where we show an item fetched over the network.
 
 ```javascript
-
-
-
 <template>
+  <div id="app">
+    <h3>V-if vs v-show</h3>
 
-
-
-<div  id="app">
-
-
-
-<h3>V-if vs v-show </h3>
-
-
-
-<Todo  v-show="todo"  v-bind="todo"  />
-
-
-
-</div>
-
-
-
+    <Todo v-show="todo" v-bind="todo" />
+  </div>
 </template>
 
-
-
 <script>
-
-
-
 import Todo from '@/components/Todo'
-
-
-
 export default {
-
-
-
-name: 'app',
-
-
-
-components: {
-
-
-
-Todo
-
-
-
-},
-
-
-
-data: ()  => ({
-
-
-
-todo:  null
-
-
-
-}),
-
-
-
-
-
-created() {
-
-
-
-this.fetchData()
-
-
-
-},
-
-
-
-methods: {
-
-
-
-async  fetchData()  {
-
-
-
-const  res  =  await  fetch('https://jsonplaceholder.typicode.com/todos/1')
-
-
-
-const  todo  =  await  res.json()
-
-
-
-this.todo  =  todo
-
-
-
+  name: 'app',
+  components: {
+    Todo
+  },
+  data: () => ({
+    todo: null
+  }),
+  created() {
+    this.fetchData()
+  },
+  methods: {
+    async fetchData() {
+      const res = await fetch('https://jsonplaceholder.typicode.com/todos/1')
+      const todo = await res.json()
+      this.todo = todo
+    }
+  }
 }
-
-
-
-}
-
-
-
-}
-
-
-
 </script>
-
-
 
 ```
 
 ```javascript
-
-
-
 <template  >
-
-
-
-<article>
-
-
-
-<p>{{title}}</p>
-
-
-
-<input  type="checkbox"  name="complete"  id="1"  :checked="completed"  />
-
-
-
-</article>
-
-
-
+  <article>
+    <p>{{title}}</p>
+    <input type="checkbox" name="complete" id="1" :checked="completed" />
+  </article>
 </template>
 
-
-
 <script>
-
-
-
 export default {
-
-
-
-name: 'Todo',
-
-
-
-props: {
-
-
-
-title:  String,
-
-
-
-completed:  Boolean,
-
-
-
-id:  Number
-
-
-
-},
-
-
-
-updated() {
-
-
-
-console.log('UPDATED TODO', { ...this.$props  })
-
-
-
-},
-
-
-
-mounted() {
-
-
-
-console.log('MOUNTED TODO',  {  ...this.$props  })
-
-
-
+  name: 'Todo',
+  props: {
+    title: String,
+    completed: Boolean,
+    id: Number
+  },
+  updated() {
+    console.log('UPDATED TODO', { ...this.$props })
+  },
+  mounted() {
+    console.log('MOUNTED TODO', { ...this.$props })
+  }
 }
-
-
-
-}
-
-
-
 </script>
-
-
 
 ```
 
 no matter how fast, (or slow 😒) the network is there is a space of time when the request is not completed and our todo is still null, With `v-show`, Vue Js would have to touch the DOM twice -once to mount the Todo component with null, and again when the request succeeded and the value of `todo` changes, phew 😢 with `v-if` on the other hand Vue will only render it when the `todo` (according to our condition) holds a value, (of course if we had set `todo` to `{}` initially, we would have ended up with a situation where they both have the same effect. don't do that
 
-![console logs with v-show](/images/post/v-show-network.jpg)
+![console logs with v-show](./images/v-show-network.jpg)
 
 ## Nested Properties
 
 let's adjust some parts of our code.
 
 ```javascript
-
-
-
 <template>
-
-
-
-…
-
-
-
-<span  >By {{todo.author.name}}</span>
-
-
-
+    ...
+  <span>By {{todo.author.name}}</span>
 </template>
 
-
-
-
-
 <script>
-
-
-
 import Todo from '@/components/Todo'
-
-
-
 export default {
-
-
-
-…
-
-
-
-methods: {
-
-
-
-async  fetchData()  {
-
-
-
-const  res  =  await  fetch('https://jsonplaceholder.typicode.com/todos/1')
-
-
-
-const  todo  =  await  res.json()
-
-
-
-this.todo  =  {  ...todo,  ...{ author:  { name:  'Waju'  }  }  }
-
-
-
+    ...
+  methods: {
+    async fetchData() {
+      const res = await fetch('https://jsonplaceholder.typicode.com/todos/1')
+      const todo = await res.json()
+      this.todo = { ...todo, ...{ author: { name: 'Waju' } } }
+    }
+  }
 }
-
-
-
-}
-
-
-
-}
-
-
-
 </script>
-
-
 
 ```
 
